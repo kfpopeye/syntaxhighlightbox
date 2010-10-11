@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AurelienRibon.CodeBox {
+namespace AurelienRibon.Ui.CodeBox {
 	public partial class DrawingControl : FrameworkElement {
 		private VisualCollection visuals = null;
 		private DrawingVisual visual = null;

@@ -93,9 +93,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AurelienRibon.CodeBox\AurelienRibon.CodeBox.csproj">
+    <ProjectReference Include="..\AurelienRibon.CodeBox\AurelienRibon.Ui.CodeBox.csproj">
       <Project>{10A9ECD3-AE1E-494D-9A27-8A32DD581759}</Project>
-      <Name>AurelienRibon.CodeBox</Name>
+      <Name>AurelienRibon.Ui.CodeBox</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

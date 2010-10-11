@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace AurelienRibon.CodeBox {
+namespace AurelienRibon.Ui.CodeBox {
 	public class TextUtilities {
 		/// <summary>
 		/// Redefined. Returns the raw number of the current line count.

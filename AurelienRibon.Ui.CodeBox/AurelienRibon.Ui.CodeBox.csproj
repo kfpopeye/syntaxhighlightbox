@@ -8,8 +8,8 @@
     <ProjectGuid>{10A9ECD3-AE1E-494D-9A27-8A32DD581759}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AurelienRibon.CodeBox</RootNamespace>
-    <AssemblyName>AurelienRibon.CodeBox</AssemblyName>
+    <RootNamespace>AurelienRibon.Ui.CodeBox</RootNamespace>
+    <AssemblyName>AurelienRibon.Ui.CodeBox</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

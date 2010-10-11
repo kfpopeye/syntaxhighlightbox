@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Windows.Input;
 
-namespace AurelienRibon.CodeBox {
+namespace AurelienRibon.Ui.CodeBox {
 	public partial class CodeBox : TextBox {
 		private DrawingControl renderCanvas = null;
 		private DrawingControl lineNumbersCanvas = null;

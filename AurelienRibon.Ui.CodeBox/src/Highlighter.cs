@@ -12,7 +12,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Diagnostics.Contracts;
 
-namespace AurelienRibon.CodeBox {
+namespace AurelienRibon.Ui.CodeBox {
 	public class Highlighter {
 		private static Dictionary<String, Highlighter> dictionary = new Dictionary<String, Highlighter>();
 		private static bool isInitialized = false;
