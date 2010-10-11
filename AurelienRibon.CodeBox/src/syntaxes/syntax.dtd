@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT Syntax (HighlightWordsRule*, HighlightLineRule*, AdvancedHighlightRule*)>
+<!ATTLIST Syntax name ID #REQUIRED>
+
+	<!ELEMENT HighlightWordsRule (Words, IgnoreCase?, Foreground?, FontWeight?, FontStyle?)>
+	<!ATTLIST HighlightWordsRule name CDATA #REQUIRED>
+
+	<!ELEMENT HighlightLineRule (LineStart, IgnoreCase?, Foreground?, FontWeight?, FontStyle?)>
+	<!ATTLIST HighlightLineRule name CDATA #REQUIRED>
+
+	<!ELEMENT AdvancedHighlightRule (Expression, IgnoreCase?, Foreground?, FontWeight?, FontStyle?)>
+	<!ATTLIST AdvancedHighlightRule name CDATA #REQUIRED>
+
+		<!ELEMENT Words (#PCDATA)>
+		<!ELEMENT Expression (#PCDATA)>
+		<!ELEMENT LineStart (#PCDATA)>
+		<!ELEMENT IgnoreCase (#PCDATA)>
+		<!ELEMENT Foreground (#PCDATA)>
+		<!ELEMENT FontWeight (#PCDATA)>
+		<!ELEMENT FontStyle (#PCDATA)>
