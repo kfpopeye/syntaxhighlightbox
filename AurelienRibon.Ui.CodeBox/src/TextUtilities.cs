@@ -9,8 +9,6 @@ namespace AurelienRibon.Ui.CodeBox {
 		/// <param name="text">The input text</param>
 		/// <returns>The current line count</returns>
 		public static int GetLineCount(String text) {
-			Contract.Ensures(Contract.Result<int>() > 0);
-
 			if (String.IsNullOrEmpty(text))
 				return 1;
 
@@ -32,10 +30,7 @@ namespace AurelienRibon.Ui.CodeBox {
 		/// <param name="lineIndex">The line index.</param>
 		/// <returns>The index of the first character of the
 		/// specified line</returns>
-		public static int GetCharIndexFromLineIndex(String text, int lineIndex) {
-			Contract.Ensures(Contract.Result<int>() >= 0);
-			Contract.Ensures(Contract.Result<int>() < ((text.Length > 0) ? text.Length : 1));
-
+		public static int GetCharIndexFromLineIndex(string text, int lineIndex) {
 			if (text == null)
 				throw new ArgumentNullException("text");
 			if (lineIndex <= 0)
@@ -49,6 +44,7 @@ namespace AurelienRibon.Ui.CodeBox {
 						return Math.Min(i + 1, text.Length - 1);
 				}
 			}
+
 			return Math.Max(text.Length - 1, 0);
 		}
 	}

@@ -177,7 +177,7 @@ namespace AurelienRibon.Ui.CodeBox {
 			Contract.Ensures(regexes.Count == tuples.Count);
 
 			foreach (Tuple tuple in tuples) {
-				RegexOptions ro = RegexOptions.Multiline;
+				RegexOptions ro = RegexOptions.Multiline | RegexOptions.Compiled;
 				ro = tuple.Options.IgnoreCase ? ro | RegexOptions.IgnoreCase : ro;
 				Regex regex = new Regex(tuple.Pattern, ro);
 				regexes.Add(regex, tuple);
@@ -194,7 +194,6 @@ namespace AurelienRibon.Ui.CodeBox {
 				Tuple tuple = regexes[regex];
 				Match m = regex.Match(ret.Text);
 				while (m.Success) {
-					Contract.Assert(m.Groups.Count == 2);
 					ret.SetForegroundBrush(tuple.Decoration.Foreground, m.Groups[1].Index, m.Groups[1].Length);
 					ret.SetFontWeight(tuple.Decoration.FontWeight, m.Groups[1].Index, m.Groups[1].Length);
 					ret.SetFontStyle(tuple.Decoration.FontStyle, m.Groups[1].Index, m.Groups[1].Length);
