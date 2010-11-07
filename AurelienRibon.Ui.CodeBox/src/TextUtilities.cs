@@ -9,14 +9,10 @@ namespace AurelienRibon.Ui.CodeBox {
 		/// <param name="text">The input text</param>
 		/// <returns>The current line count</returns>
 		public static int GetLineCount(String text) {
-			if (String.IsNullOrEmpty(text))
-				return 1;
-
 			int lcnt = 1;
-			char[] c = text.ToCharArray();
-			for (int i = 0; i < c.Length; i++) {
-				if ('\n'.Equals(c[i]))
-					lcnt++;
+			for (int i = 0; i < text.Length; i++) {
+				if (text[i] == '\n')
+					lcnt += 1;
 			}
 			return lcnt;
 		}

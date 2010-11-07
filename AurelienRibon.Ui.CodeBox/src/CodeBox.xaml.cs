@@ -1,86 +1,232 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace AurelienRibon.Ui.CodeBox {
 	public partial class CodeBox : TextBox {
-		private DrawingControl renderCanvas = null;
-		private DrawingControl lineNumbersCanvas = null;
-		private double lineHeight = 0.0;
-		private int lineCount = 1;
-		private Highlighter currentHighlighter = null;
+
+		// --------------------------------------------------------------------
+		// Attributes
+		// --------------------------------------------------------------------
 
 		public double LineHeight {
 			get { return lineHeight; }
 			set {
 				if (value != lineHeight) {
 					lineHeight = value;
+					blockHeight = maxLineCountInBlock * value;
 					TextBlock.SetLineStackingStrategy(this, LineStackingStrategy.BlockLineHeight);
 					TextBlock.SetLineHeight(this, lineHeight);
 				}
 			}
 		}
 
+		private DrawingControl renderCanvas;
+		private DrawingControl lineNumbersCanvas;
+		private ScrollViewer scrollViewer;
+		private TextBlock debugTB;
+		private double lineHeight;
+		private int totalLineCount;
+		private List<InnerTextBlock> blocks;
+		private int maxBlockCount;
+		private double blockHeight;
+
+		private readonly int maxLineCountInBlock = 5;
+
+		// --------------------------------------------------------------------
+		// Ctor and event handlers
+		// --------------------------------------------------------------------
+
 		public CodeBox() {
-			Highlighter.Initialize();
 			InitializeComponent();
 
+			LineHeight = FontSize * 1.3;
+			totalLineCount = 1;
+			blocks = new List<InnerTextBlock>();
+
 			Loaded += (s, e) => {
-				renderCanvas = (DrawingControl)Template.FindName("renderCanvas", this);
-				lineNumbersCanvas = (DrawingControl)Template.FindName("lineNumbersCanvas", this);
+				renderCanvas = (DrawingControl)Template.FindName("PART_RenderCanvas", this);
+				lineNumbersCanvas = (DrawingControl)Template.FindName("PART_LineNumbersCanvas", this);
+				scrollViewer = (ScrollViewer)Template.FindName("PART_ContentHost", this);
+				debugTB = (TextBlock)Template.FindName("PART_DebugTB", this);
 
-				var scviewer = (ScrollViewer)Template.FindName("PART_ContentHost", this);
-				scviewer.ScrollChanged += (ss, ee) => {
-					Update();
-					Draw(false);
-				};
+				scrollViewer.ScrollChanged += OnScrollChanged;
 
-				Update();
-				Draw(true);
+				UpdateMaxBlockCount();
+				InvalidateBlocks();
+			};
+
+			SizeChanged += (s, e) => {
+				if (e.HeightChanged == false)
+					return;
+				UpdateMaxBlockCount();
+				UpdateBlocks();
+				InvalidateVisual();
 			};
 
 			TextChanged += (s, e) => {
-				lineCount = TextUtilities.GetLineCount(Text);
-				Update();
-				Draw(true);
+				UpdateTotalLineCount();
+				InvalidateBlocks();
+				InvalidateVisual();
 			};
 		}
 
-		public Highlighter CurrentHighlighter {
-			set { currentHighlighter = value; }
-			get { return currentHighlighter; }
+		protected override void OnRender(DrawingContext drawingContext) {
+			DrawBlocks();
+			DrawLineNumbers(GetIndexOfFirstVisibleLine(), GetIndexOfLastVisibleLine());
+			base.OnRender(drawingContext);
+		}
+
+		private void OnScrollChanged(object sender, ScrollChangedEventArgs e) {
+			if (e.VerticalChange != 0)
+				UpdateBlocks();
+			InvalidateVisual();
+		}
+
+		// -----------------------------------------------------------
+		// Updating
+		// -----------------------------------------------------------
+
+		private void UpdateTotalLineCount() {
+			totalLineCount = TextUtilities.GetLineCount(Text);
+		}
+
+		private void UpdateMaxBlockCount() {
+			maxBlockCount = (int)Math.Ceiling(ActualHeight / (maxLineCountInBlock * LineHeight));
+		}
+
+		private void UpdateBlocks() {
+			if (blocks.Count == 0)
+				return;
+
+			Point firstBlockPos = blocks.First().Position;
+			Point lastBlockPos = blocks.Last().Position;
+
+			// If something is visible before first block...
+			if (firstBlockPos.Y - VerticalOffset > 0) {
+				int firstLineIndex = blocks.First().LineStartIndex - maxLineCountInBlock;
+				firstLineIndex = firstLineIndex >= 0 ? firstLineIndex : 0;
+				int firstCharIndex = TextUtilities.GetCharIndexFromLineIndex(Text, firstLineIndex); // to be optimized (backward search)
+
+				InnerTextBlock block = new InnerTextBlock(
+					firstCharIndex,
+					blocks.First().CharStartIndex - 1, 
+					firstLineIndex, 
+					blocks.First().LineStartIndex - 1,
+					LineHeight);
+				block.Text = GetFormattedText(block.GetSubString(Text));
+				blocks.Add(block);
+			}
+
+			// If something is visible after last block...
+			if (!blocks.Last().IsLast) {
+				if (lastBlockPos.Y + blockHeight - VerticalOffset < ActualHeight) {
+					int lastLineIndex = blocks.Last().LineEndIndex + maxLineCountInBlock;
+					lastLineIndex = lastLineIndex <= totalLineCount ? lastLineIndex : totalLineCount;
+					int lastCharIndex = TextUtilities.GetCharIndexFromLineIndex(Text, lastLineIndex); // to be optimized (forward search)
+
+					InnerTextBlock block = new InnerTextBlock(
+						blocks.Last().CharEndIndex + 1,
+						lastCharIndex,
+						blocks.Last().LineEndIndex + 1,
+						lastLineIndex,
+						LineHeight);
+					block.Text = GetFormattedText(block.GetSubString(Text));
+					blocks.Add(block);
+				}
+			}
+
+			SetDebugMessage("Update: " + blocks.Count + " / " + maxBlockCount);
+		}
+
+		private void InvalidateBlocks() {
+			blocks.Clear();
+
+			int fvline = GetIndexOfFirstVisibleLine();
+			int lvline = GetIndexOfLastVisibleLine();
+			int fvchar = TextUtilities.GetCharIndexFromLineIndex(Text, fvline);
+			int lvchar = TextUtilities.GetCharIndexFromLineIndex(Text, lvline);
+
+			int localLineCount = 1;
+			int charStart = fvchar;
+			int lineStart = fvline;
+			for (int i = fvchar; i < Text.Length; i++) {
+				if (Text[i] == '\n') {
+					localLineCount += 1;
+				}
+				if (i == Text.Length - 1) {
+					string blockText = Text.Substring(charStart);
+					InnerTextBlock block = new InnerTextBlock(
+						charStart,
+						i, lineStart,
+						lineStart + TextUtilities.GetLineCount(blockText) - 1,
+						LineHeight);
+					block.Text = GetFormattedText(block.GetSubString(Text));
+					block.IsLast = true;
+					blocks.Add(block);
+					break;
+				}
+				if (localLineCount > maxLineCountInBlock) {
+					InnerTextBlock block = new InnerTextBlock(
+						charStart, 
+						i, 
+						lineStart, 
+						lineStart + maxLineCountInBlock - 1, 
+						LineHeight);
+					block.Text = GetFormattedText(block.GetSubString(Text));
+					blocks.Add(block);
+
+					charStart = i + 1;
+					lineStart += maxLineCountInBlock;
+					localLineCount = 1;
+
+					if (i > lvchar)
+						break;
+				}
+			}
+
+			SetDebugMessage("Invalidate: " + blocks.Count + " / " + maxBlockCount);
 		}
 
 		// -----------------------------------------------------------
 		// Rendering
 		// -----------------------------------------------------------
 
-		private void Update() {
-			LineHeight = FontSize * 1.3;
+		private void SetDebugMessage(string msg) {
+			if (debugTB != null)
+				debugTB.Text = msg;
 		}
 
-		private void Draw(bool forceRedraw) {
-			int fvli = GetIndexOfFirstVisibleLine();
-			int lvli = GetIndexOfLastVisibleLine();
-
-			DrawLineNumbers(fvli, lvli);
-			DrawText(forceRedraw, fvli, lvli);
-		}
-
-		private void DrawText(bool forceRedraw, int firstVisibleLineIndex, int lastVisibleLineIndex) {
+		private void DrawBlocks() {
 			if (!IsLoaded || renderCanvas == null)
 				return;
 
-			var ft = HighlightText(forceRedraw, firstVisibleLineIndex, lastVisibleLineIndex);
-
 			var dc = renderCanvas.GetContext();
-			dc.DrawText(ft, new Point(3 - HorizontalOffset, 1 - VerticalOffset % lineHeight));
+			foreach (var block in blocks) {
+				Point blockPos = block.Position;
+				double top = blockPos.Y - VerticalOffset;
+				double bottom = top + blockHeight;
+				if (top < ActualHeight && bottom > 0)
+					dc.DrawText(block.Text, new Point(2 - HorizontalOffset, block.Position.Y - VerticalOffset));
+			}
 			dc.Close();
 		}
+
+
+
+
+
+
+
+
+
+
 
 		private void DrawLineNumbers(int firstVisibleLineIndex, int lastVisibleLineIndex) {
 			if (!IsLoaded || lineNumbersCanvas == null)
@@ -92,32 +238,6 @@ namespace AurelienRibon.Ui.CodeBox {
 			dc.Close();
 		}
 
-		private int oldFirstVisibleLineIndex = -1;
-		private int oldLastVisibleLineIndex = -1;
-		private FormattedText ft;
-		private FormattedText HighlightText(bool forceRedraw, int firstVisibleLineIndex, int lastVisibleLineIndex) {
-			if (!forceRedraw 
-				&& firstVisibleLineIndex == oldFirstVisibleLineIndex 
-				&& lastVisibleLineIndex == oldLastVisibleLineIndex)
-				return ft;
-
-			int firstCharIndex = TextUtilities.GetCharIndexFromLineIndex(Text, firstVisibleLineIndex);
-			int lastCharIndex = TextUtilities.GetCharIndexFromLineIndex(Text, lastVisibleLineIndex + 1);
-
-			string txt = "";
-			if (Text.Length > 0)
-				txt = Text.Substring(firstCharIndex, lastCharIndex - firstCharIndex + 1);
-
-			ft = GetFormattedText(txt);
-			if (currentHighlighter != null)
-				ft = currentHighlighter.Highlight(ft);
-
-			oldFirstVisibleLineIndex = firstCharIndex;
-			oldLastVisibleLineIndex = lastCharIndex;
-
-			return ft;
-		}
-
 		// -----------------------------------------------------------
 		// Utilities
 		// -----------------------------------------------------------
@@ -127,7 +247,7 @@ namespace AurelienRibon.Ui.CodeBox {
 		/// </summary>
 		public int GetIndexOfFirstVisibleLine() {
 			int guessedLine = (int)(VerticalOffset / lineHeight);
-			return guessedLine < lineCount ? guessedLine : lineCount - 1;
+			return guessedLine > totalLineCount ? totalLineCount : guessedLine;
 		}
 
 		/// <summary>
@@ -136,7 +256,7 @@ namespace AurelienRibon.Ui.CodeBox {
 		public int GetIndexOfLastVisibleLine() {
 			double height = VerticalOffset + ViewportHeight;
 			int guessedLine = (int)(height / lineHeight);
-			return guessedLine < lineCount ? guessedLine : lineCount - 1;
+			return guessedLine > totalLineCount - 1 ? totalLineCount - 1 : guessedLine;
 		}
 
 		/// <summary>
@@ -183,28 +303,38 @@ namespace AurelienRibon.Ui.CodeBox {
 		public static readonly DependencyProperty IsLineNumbersMarginVisibleProperty = DependencyProperty.Register(
 			"IsLineNumbersMarginVisible", typeof(bool), typeof(CodeBox), new PropertyMetadata(true));
 
-		public static readonly DependencyProperty HighlightedSyntaxProperty = DependencyProperty.Register(
-			"HighlightedSyntax", typeof(string), typeof(CodeBox), new PropertyMetadata("None", new PropertyChangedCallback(OnHighlightedSyntaxPropertyChanged)));
-
 		public bool IsLineNumbersMarginVisible {
 			get { return (bool)GetValue(IsLineNumbersMarginVisibleProperty); }
 			set { SetValue(IsLineNumbersMarginVisibleProperty, value); }
 		}
 
-		public string HighlightedSyntax {
-			get { return (String)GetValue(HighlightedSyntaxProperty); }
-			set { SetValue(HighlightedSyntaxProperty, value); }
-		}
+		// -----------------------------------------------------------
+		// Classes
+		// -----------------------------------------------------------
 
-		private static void OnHighlightedSyntaxPropertyChanged(DependencyObject source,
-			DependencyPropertyChangedEventArgs e) {
-			CodeBox cbox = source as CodeBox;
-			cbox.CurrentHighlighter = Highlighter.GetHighlighter(e.NewValue as String);
-			if (cbox.CurrentHighlighter != null)
-				Debug.WriteLine("CodeBox (" + cbox.GetHashCode() + ") highlighter successfully changed to " +
-					cbox.CurrentHighlighter.Name);
-			else
-				Debug.WriteLine("CodeBox (" + cbox.GetHashCode() + ") highlighter not found");
+		private class InnerTextBlock {
+			public FormattedText Text { get; set; }
+			public int CharStartIndex { get; private set; }
+			public int CharEndIndex { get; private set; }
+			public int LineStartIndex { get; private set; }
+			public int LineEndIndex { get; private set; }
+			public Point Position { get { return new Point(0, LineStartIndex * lineHeight); } }
+			public bool IsLast { get; set; }
+
+			private double lineHeight;
+
+			public InnerTextBlock(int charStart, int charEnd, int lineStart, int lineEnd, double lineHeight) {
+				CharStartIndex = charStart;
+				CharEndIndex = charEnd;
+				LineStartIndex = lineStart;
+				LineEndIndex = lineEnd;
+				this.lineHeight = lineHeight;
+				IsLast = false;
+			}
+
+			public string GetSubString(string text) {
+				return text.Substring(CharStartIndex, CharEndIndex - CharStartIndex + 1);
+			}
 		}
 	}
 }

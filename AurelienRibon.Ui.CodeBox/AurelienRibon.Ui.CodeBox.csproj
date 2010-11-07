@@ -48,9 +48,7 @@
     <Compile Include="src\CodeBox.xaml.cs">
       <DependentUpon>CodeBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="src\DrawingControl.xaml.cs">
-      <DependentUpon>DrawingControl.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="src\DrawingControl.cs" />
     <Compile Include="src\Highlighter.cs" />
     <Compile Include="src\TextUtilities.cs" />
   </ItemGroup>
@@ -59,17 +57,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="src\DrawingControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="src\syntaxes\None.xml" />
     <EmbeddedResource Include="src\syntaxes\VHDL.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="src\syntaxes\syntax.dtd" />
     <EmbeddedResource Include="src\syntaxes\syntax.xsd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

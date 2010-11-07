@@ -3,22 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AurelienRibon.Ui.CodeBox {
-	public partial class DrawingControl : FrameworkElement {
-		private VisualCollection visuals = null;
-		private DrawingVisual visual = null;
+	public class DrawingControl : FrameworkElement {
+		private VisualCollection visuals;
+		private DrawingVisual visual;
 
 		public DrawingControl() {
-			InitializeComponent();
 			visual = new DrawingVisual();
 			visuals = new VisualCollection(this);
 			visuals.Add(visual);
@@ -39,4 +31,3 @@ namespace AurelienRibon.Ui.CodeBox {
 		}
 	}
 }
-
