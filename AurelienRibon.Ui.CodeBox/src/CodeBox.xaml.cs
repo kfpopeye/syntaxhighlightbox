@@ -34,10 +34,9 @@ namespace AurelienRibon.Ui.CodeBox {
 		private double lineHeight;
 		private int totalLineCount;
 		private List<InnerTextBlock> blocks;
-		private int maxBlockCount;
 		private double blockHeight;
 
-		private readonly int maxLineCountInBlock = 5;
+		private readonly int maxLineCountInBlock = 3;
 
 		// --------------------------------------------------------------------
 		// Ctor and event handlers
@@ -58,14 +57,12 @@ namespace AurelienRibon.Ui.CodeBox {
 
 				scrollViewer.ScrollChanged += OnScrollChanged;
 
-				UpdateMaxBlockCount();
 				InvalidateBlocks();
 			};
 
 			SizeChanged += (s, e) => {
 				if (e.HeightChanged == false)
 					return;
-				UpdateMaxBlockCount();
 				UpdateBlocks();
 				InvalidateVisual();
 			};
@@ -97,10 +94,6 @@ namespace AurelienRibon.Ui.CodeBox {
 			totalLineCount = TextUtilities.GetLineCount(Text);
 		}
 
-		private void UpdateMaxBlockCount() {
-			maxBlockCount = (int)Math.Ceiling(ActualHeight / (maxLineCountInBlock * LineHeight));
-		}
-
 		private void UpdateBlocks() {
 			if (blocks.Count == 0)
 				return;
@@ -121,7 +114,7 @@ namespace AurelienRibon.Ui.CodeBox {
 					blocks.First().LineStartIndex - 1,
 					LineHeight);
 				block.Text = GetFormattedText(block.GetSubString(Text));
-				blocks.Add(block);
+				blocks.Insert(0, block);
 			}
 
 			// If something is visible after last block...
@@ -129,10 +122,16 @@ namespace AurelienRibon.Ui.CodeBox {
 				if (lastBlockPos.Y + blockHeight - VerticalOffset < ActualHeight) {
 					int lastLineIndex = blocks.Last().LineEndIndex + maxLineCountInBlock;
 					lastLineIndex = lastLineIndex <= totalLineCount ? lastLineIndex : totalLineCount;
+					int fisrCharIndex = blocks.Last().CharEndIndex + 1;
 					int lastCharIndex = TextUtilities.GetCharIndexFromLineIndex(Text, lastLineIndex); // to be optimized (forward search)
 
+					if (lastCharIndex == fisrCharIndex) {
+						blocks.Last().IsLast = true;
+						return;
+					}
+
 					InnerTextBlock block = new InnerTextBlock(
-						blocks.Last().CharEndIndex + 1,
+						fisrCharIndex,
 						lastCharIndex,
 						blocks.Last().LineEndIndex + 1,
 						lastLineIndex,
@@ -142,7 +141,7 @@ namespace AurelienRibon.Ui.CodeBox {
 				}
 			}
 
-			SetDebugMessage("Update: " + blocks.Count + " / " + maxBlockCount);
+			SetDebugMessage("Update: " + blocks.Count);
 		}
 
 		private void InvalidateBlocks() {
@@ -191,7 +190,7 @@ namespace AurelienRibon.Ui.CodeBox {
 				}
 			}
 
-			SetDebugMessage("Invalidate: " + blocks.Count + " / " + maxBlockCount);
+			SetDebugMessage("Invalidate: ");
 		}
 
 		// -----------------------------------------------------------
@@ -334,6 +333,15 @@ namespace AurelienRibon.Ui.CodeBox {
 
 			public string GetSubString(string text) {
 				return text.Substring(CharStartIndex, CharEndIndex - CharStartIndex + 1);
+			}
+
+			public override string ToString() {
+				return string.Format("L:{0}/{1} C:{2}/{3} {4}", 
+					LineStartIndex,
+					LineEndIndex,
+					CharStartIndex,
+					CharEndIndex,
+					Text.Text);
 			}
 		}
 	}
