@@ -25,10 +25,10 @@
 						<ColumnDefinition Width="auto" />
 						<ColumnDefinition />
 					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
+					<!--<Grid.RowDefinitions>
 						<RowDefinition />
 						<RowDefinition Height="auto" />
-					</Grid.RowDefinitions>
+					</Grid.RowDefinitions>-->
 
 					<local:DrawingControl x:Name="PART_LineNumbersCanvas" Grid.Column="0" ClipToBounds="True" Width="50" />
 
@@ -46,7 +46,8 @@
 
 					</Grid>
 
-					<TextBlock Grid.Row="1" Grid.ColumnSpan="3" x:Name="PART_DebugTB" Padding="5,0" Foreground="Black" />
+					<!--Debug TextBox-->
+					<!--<TextBlock Grid.Row="1" Grid.ColumnSpan="3" x:Name="PART_DebugTB" Padding="5,0" Foreground="Black" />-->
 
 				</Grid>
 			</Border>
