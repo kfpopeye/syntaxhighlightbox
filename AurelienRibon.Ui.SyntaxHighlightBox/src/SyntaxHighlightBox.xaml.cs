@@ -41,7 +41,6 @@ namespace AurelienRibon.Ui.SyntaxHighlightBox {
 		private DrawingControl renderCanvas;
 		private DrawingControl lineNumbersCanvas;
 		private ScrollViewer scrollViewer;
-		private TextBlock debugTB;
 		private double lineHeight;
 		private int totalLineCount;
 		private List<InnerTextBlock> blocks;
@@ -64,7 +63,6 @@ namespace AurelienRibon.Ui.SyntaxHighlightBox {
 				renderCanvas = (DrawingControl)Template.FindName("PART_RenderCanvas", this);
 				lineNumbersCanvas = (DrawingControl)Template.FindName("PART_LineNumbersCanvas", this);
 				scrollViewer = (ScrollViewer)Template.FindName("PART_ContentHost", this);
-				debugTB = (TextBlock)Template.FindName("PART_DebugTB", this);
 
 				lineNumbersCanvas.Width = GetFormattedTextWidth(string.Format("{0:0000}", totalLineCount)) + 5;
 
@@ -136,8 +134,6 @@ namespace AurelienRibon.Ui.SyntaxHighlightBox {
 				blocks.Add(block);
 				FormatBlock(block, blocks.Count > 1 ? blocks[blocks.Count - 2] : null);
 			}
-
-			SetDebugMessage("Update: " + blocks.Count);
 		}
 
 		private void InvalidateBlocks(int changeOffset) {
@@ -211,18 +207,11 @@ namespace AurelienRibon.Ui.SyntaxHighlightBox {
 						break;
 				}
 			}
-
-			SetDebugMessage("Invalidate: " + blocks.Count);
 		}
 
 		// -----------------------------------------------------------
 		// Rendering
 		// -----------------------------------------------------------
-
-		private void SetDebugMessage(string msg) {
-			if (debugTB != null)
-				debugTB.Text = msg;
-		}
 
 		private void DrawBlocks() {
 			if (!IsLoaded || renderCanvas == null || lineNumbersCanvas == null)
@@ -242,7 +231,7 @@ namespace AurelienRibon.Ui.SyntaxHighlightBox {
 							lineNumbersCanvas.Width = GetFormattedTextWidth(string.Format("{0:0000}", totalLineCount)) + 5;
 							dc2.DrawText(block.LineNumbers, new Point(lineNumbersCanvas.ActualWidth, 1 + block.Position.Y - VerticalOffset));
 						}
-					} catch (ArgumentOutOfRangeException ex) {
+					} catch {
 						// Don't know why this exception is raised sometimes.
 						// Reproduce steps:
 						// - Sets a valid syntax highlighter on the box.

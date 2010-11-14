@@ -1,7 +1,7 @@
 ﻿<TextBox x:Class="AurelienRibon.Ui.SyntaxHighlightBox.SyntaxHighlightBox"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		xmlns:local="clr-namespace:AurelienRibon.Ui.SyntaxHighlightBox" TextWrapping="NoWrap">
+		xmlns:local="clr-namespace:AurelienRibon.Ui.SyntaxHighlightBox" TextWrapping="NoWrap" Foreground="#00000000">
 
 	<TextBox.Style>
 		<Style TargetType="{x:Type local:SyntaxHighlightBox}">
@@ -38,7 +38,7 @@
 									TextOptions.TextRenderingMode="ClearType" TextOptions.TextFormattingMode="Display" />
 						</Grid>
 						<!--Transparent input textbox-->
-						<ScrollViewer x:Name="PART_ContentHost" Background="#00FFFFFF" Foreground="#00000000" />
+						<ScrollViewer x:Name="PART_ContentHost" Background="#00FFFFFF" />
 
 					</Grid>
 

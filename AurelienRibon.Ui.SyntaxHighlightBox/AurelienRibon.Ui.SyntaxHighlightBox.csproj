@@ -45,8 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\CodeBox.xaml.cs">
-      <DependentUpon>CodeBox.xaml</DependentUpon>
+    <Compile Include="src\SyntaxHighlightBox.xaml.cs">
+      <DependentUpon>SyntaxHighlightBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\DrawingControl.cs" />
     <Compile Include="src\HighlighterManager.cs" />
@@ -54,7 +54,7 @@
     <Compile Include="src\TextUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="src\CodeBox.xaml">
+    <Page Include="src\SyntaxHighlightBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
