@@ -8,8 +8,8 @@
     <ProjectGuid>{10A9ECD3-AE1E-494D-9A27-8A32DD581759}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AurelienRibon.Ui.CodeBox</RootNamespace>
-    <AssemblyName>AurelienRibon.Ui.CodeBox</AssemblyName>
+    <RootNamespace>AurelienRibon.Ui.SyntaxHighlightBox</RootNamespace>
+    <AssemblyName>AurelienRibon.Ui.SyntaxHighlightBox</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -49,6 +49,7 @@
       <DependentUpon>CodeBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="src\DrawingControl.cs" />
+    <Compile Include="src\HighlighterManager.cs" />
     <Compile Include="src\IHighlighter.cs" />
     <Compile Include="src\TextUtilities.cs" />
   </ItemGroup>
@@ -59,10 +60,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="src\syntaxes\VHDL.xml" />
+    <Resource Include="resources\VHDL.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="src\syntaxes\syntax.xsd" />
+    <Resource Include="resources\syntax.xsd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -93,9 +93,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AurelienRibon.Ui.CodeBox\AurelienRibon.Ui.CodeBox.csproj">
+    <ProjectReference Include="..\AurelienRibon.Ui.SyntaxHighlightBox\AurelienRibon.Ui.SyntaxHighlightBox.csproj">
       <Project>{10A9ECD3-AE1E-494D-9A27-8A32DD581759}</Project>
-      <Name>AurelienRibon.Ui.CodeBox</Name>
+      <Name>AurelienRibon.Ui.SyntaxHighlightBox</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

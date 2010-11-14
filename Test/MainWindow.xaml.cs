@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AurelienRibon.Ui.SyntaxHighlightBox;
 
 namespace Test {
 	/// <summary>
@@ -19,6 +20,7 @@ namespace Test {
 	public partial class MainWindow : Window {
 		public MainWindow() {
 			InitializeComponent();
+			box.CurrentHighlighter = HighlighterManager.Instance.Highlighters["VHDL"];
 		}
 	}
 }

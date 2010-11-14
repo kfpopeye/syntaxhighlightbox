@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 
-namespace AurelienRibon.Ui.CodeBox {
+namespace AurelienRibon.Ui.SyntaxHighlightBox {
 	public class DrawingControl : FrameworkElement {
 		private VisualCollection visuals;
 		private DrawingVisual visual;

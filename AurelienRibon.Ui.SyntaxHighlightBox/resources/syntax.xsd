@@ -43,10 +43,10 @@
 
 	<xs:group name="options">
 		<xs:sequence>
-			<xs:element minOccurs="0" maxOccurs="1" name="IgnoreCase" type="xs:boolean" default="false"/>
-			<xs:element minOccurs="0" maxOccurs="1" name="Foreground" type="xs:string" default="Black"/>
-			<xs:element minOccurs="0" maxOccurs="1" name="FontWeight" type="xs:string" default="Normal"/>
-			<xs:element minOccurs="0" maxOccurs="1" name="FontStyle" type="xs:string" default="Normal"/>
+			<xs:element minOccurs="1" maxOccurs="1" name="IgnoreCase" type="xs:boolean"/>
+			<xs:element minOccurs="1" maxOccurs="1" name="Foreground" type="xs:string" />
+			<xs:element minOccurs="1" maxOccurs="1" name="FontWeight" type="xs:string" />
+			<xs:element minOccurs="1" maxOccurs="1" name="FontStyle" type="xs:string" />
 		</xs:sequence>
 	</xs:group>
 </xs:schema>

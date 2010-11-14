@@ -18,6 +18,7 @@
 		<IgnoreCase>true</IgnoreCase>
 		<Foreground>#0080FF</Foreground>
 		<FontWeight>Bold</FontWeight>
+		<FontStyle>Normal</FontStyle>
 	</HighlightWordsRule>
 
 	<HighlightWordsRule name="Standard packages">
@@ -29,6 +30,8 @@
 		</Words>
 		<IgnoreCase>true</IgnoreCase>
 		<Foreground>#C00080</Foreground>
+		<FontWeight>Normal</FontWeight>
+		<FontStyle>Normal</FontStyle>
 	</HighlightWordsRule>
 
 	<HighlightWordsRule name="Standard types">
@@ -41,6 +44,8 @@
 		</Words>
 		<IgnoreCase>true</IgnoreCase>
 		<Foreground>#8000FF</Foreground>
+		<FontWeight>Normal</FontWeight>
+		<FontStyle>Normal</FontStyle>
 	</HighlightWordsRule>
 
 	<HighlightWordsRule name="Standard functions">
@@ -53,33 +58,23 @@
 		</Words>
 		<IgnoreCase>true</IgnoreCase>
 		<Foreground>#0080FF</Foreground>
+		<FontWeight>Normal</FontWeight>
+		<FontStyle>Normal</FontStyle>
 	</HighlightWordsRule>
 
 	<HighlightLineRule name="Comments">
 		<LineStart>--</LineStart>
+		<IgnoreCase>false</IgnoreCase>
 		<Foreground>#009933</Foreground>
-		<FontStyle>Italic</FontStyle>
+		<FontWeight>Normal</FontWeight>
+		<FontStyle>Normal</FontStyle>
 	</HighlightLineRule>
 
 	<AdvancedHighlightRule name="Numbers">
 		<Expression>\b([0-9]+)\b</Expression>
+		<IgnoreCase>false</IgnoreCase>
 		<Foreground>#F68A1B</Foreground>
-	</AdvancedHighlightRule>
-
-	<AdvancedHighlightRule name="Operators">
-		<Expression>([\+\-\*/&lt;&gt;=])</Expression>
-		<IgnoreCase>true</IgnoreCase>
-		<Foreground>#0080FF</Foreground>
-	</AdvancedHighlightRule>
-
-	<AdvancedHighlightRule name="Signals">
-		<Expression>'([01XUHLWZ-])'</Expression>
-		<IgnoreCase>true</IgnoreCase>
-		<Foreground>#808080</Foreground>
-	</AdvancedHighlightRule>
-
-	<AdvancedHighlightRule name="Srings">
-		<Expression>"(.+?)"</Expression>
-		<Foreground>#808080</Foreground>
+		<FontWeight>Normal</FontWeight>
+		<FontStyle>Normal</FontStyle>
 	</AdvancedHighlightRule>
 </Syntax>
