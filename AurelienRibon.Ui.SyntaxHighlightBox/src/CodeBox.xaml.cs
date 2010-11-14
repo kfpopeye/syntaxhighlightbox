@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Windows.Input;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace AurelienRibon.Ui.SyntaxHighlightBox {
 	public partial class SyntaxHighlightBox : TextBox {
@@ -229,15 +230,24 @@ namespace AurelienRibon.Ui.SyntaxHighlightBox {
 
 			var dc = renderCanvas.GetContext();
 			var dc2 = lineNumbersCanvas.GetContext();
-			foreach (var block in blocks) {
+			for (int i = 0; i < blocks.Count; i++) {
+				InnerTextBlock block = blocks[i];
 				Point blockPos = block.Position;
 				double top = blockPos.Y - VerticalOffset;
 				double bottom = top + blockHeight;
 				if (top < ActualHeight && bottom > 0) {
-					dc.DrawText(block.FormattedText, new Point(2 - HorizontalOffset, block.Position.Y - VerticalOffset));
-					if (IsLineNumbersMarginVisible) {
-						lineNumbersCanvas.Width = GetFormattedTextWidth(string.Format("{0:0000}", totalLineCount)) + 5;
-						dc2.DrawText(block.LineNumbers, new Point(lineNumbersCanvas.ActualWidth, 1 + block.Position.Y - VerticalOffset));
+					try {
+						dc.DrawText(block.FormattedText, new Point(2 - HorizontalOffset, block.Position.Y - VerticalOffset));
+						if (IsLineNumbersMarginVisible) {
+							lineNumbersCanvas.Width = GetFormattedTextWidth(string.Format("{0:0000}", totalLineCount)) + 5;
+							dc2.DrawText(block.LineNumbers, new Point(lineNumbersCanvas.ActualWidth, 1 + block.Position.Y - VerticalOffset));
+						}
+					} catch (ArgumentOutOfRangeException ex) {
+						// Don't know why this exception is raised sometimes.
+						// Reproduce steps:
+						// - Sets a valid syntax highlighter on the box.
+						// - Copy a large chunk of code in the clipboard.
+						// - Paste it using ctrl+v and keep these buttons pressed.
 					}
 				}
 			}
@@ -272,8 +282,10 @@ namespace AurelienRibon.Ui.SyntaxHighlightBox {
 		private void FormatBlock(InnerTextBlock currentBlock, InnerTextBlock previousBlock) {
 			currentBlock.FormattedText = GetFormattedText(currentBlock.RawText);
 			if (CurrentHighlighter != null) {
-				int previousCode = previousBlock != null ? previousBlock.Code : -1;
-				currentBlock.Code = CurrentHighlighter.Highlight(currentBlock.FormattedText, previousCode);
+				ThreadPool.QueueUserWorkItem(p => {
+					int previousCode = previousBlock != null ? previousBlock.Code : -1;
+					currentBlock.Code = CurrentHighlighter.Highlight(currentBlock.FormattedText, previousCode);
+				});
 			}
 		}
 
